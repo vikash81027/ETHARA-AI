@@ -1,15 +1,11 @@
 {
-  "name": "server",
+  "name": "team-task-manager",
   "version": "1.0.0",
-  "main": "server.js",
-  "type": "commonjs",
-  "scripts": {
-    "start": "node server.js"
+  "engines": {
+    "node": ">=18.0.0"
   },
-  "dependencies": {
-    "express": "^4.19.2",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "mongoose": "^8.5.1"
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "start": "cd server && npm install && node server.js"
   }
 }
