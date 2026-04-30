@@ -19,7 +19,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: true,
   credentials: true
 }));
 app.use(express.json());
@@ -31,19 +31,22 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/teamtaskman
   .then(() => console.log('MongoDB Connected'))
   .catch((err) => console.log('MongoDB Connection Error: ', err));
 
-// Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 
-// Serve Frontend
-const clientDistPath = path.resolve(__dirname, '../client/dist');
-app.use(express.static(clientDistPath));
+// ✅ FIX: Correct frontend serving (Railway compatible)
+const clientPath = path.join(__dirname, '..', 'client', 'dist');
+
+app.use(express.static(clientPath));
 
 app.get('/*', (req, res) => {
-  res.sendFile(path.join(clientDistPath, 'index.html'));
+  res.sendFile(path.join(clientPath, 'index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
