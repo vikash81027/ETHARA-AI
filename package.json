@@ -1,4 +1,11 @@
-"scripts": {
-  "build": "cd client && npm install && npm install vite --save-dev && npm run build",
-  "start": "node server/server.js"
+{
+  "name": "team-task-manager",
+  "version": "1.0.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "npm install --prefix client && npm run build --prefix client",
+    "start": "npm install --prefix server && node server/server.js"
+  }
 }
