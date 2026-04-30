@@ -26,34 +26,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Connect DB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/teamtaskmanager', {
-  serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s
-})
+// DB Connect
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/teamtaskmanager')
   .then(() => console.log('MongoDB Connected'))
-  .catch((err) => {
-    console.error('MongoDB Connection Error:', err.message);
-    // Do not exit process, allow the server to start to serve the frontend
-  });
+  .catch(err => console.error('MongoDB Error:', err.message));
 
-// API Routes
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 
-// ✅ FIX: Correct frontend serving (Railway compatible)
+// Frontend serve
 const clientPath = path.join(__dirname, '..', 'client', 'dist');
-
 app.use(express.static(clientPath));
 
 app.get('/*', (req, res) => {
   res.sendFile(path.join(clientPath, 'index.html'));
 });
 
-const PORT = process.env.PORT || 5000;
+// ✅ IMPORTANT
+const PORT = process.env.PORT || 10000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-}).on('error', (err) => {
-  console.error('Server failed to start:', err.message);
 });
