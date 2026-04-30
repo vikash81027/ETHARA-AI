@@ -5,7 +5,6 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import fs from 'fs';
 
 import authRoutes from './src/routes/authRoutes.js';
 import projectRoutes from './src/routes/projectRoutes.js';
@@ -38,19 +37,12 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 
 // Serve Frontend
-const clientDistPath = path.join(__dirname, '../client/dist');
+const clientDistPath = path.resolve(__dirname, '../client/dist');
+app.use(express.static(clientDistPath));
 
-if (fs.existsSync(clientDistPath)) {
-  app.use(express.static(clientDistPath));
-
-  app.use((req, res) =>
-    res.sendFile(path.resolve(clientDistPath, 'index.html'))
-  );
-} else {
-  app.get('/', (req, res) => {
-    res.send('API is running... (Client build not found at ' + clientDistPath + ')');
-  });
-}
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(clientDistPath, 'index.html'));
+});
 
 const PORT = process.env.PORT || 5000;
 
