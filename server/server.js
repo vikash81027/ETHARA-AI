@@ -5,6 +5,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 import authRoutes from './src/routes/authRoutes.js';
 import projectRoutes from './src/routes/projectRoutes.js';
@@ -36,16 +37,18 @@ app.use('/api/auth', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 
-// Serve Frontend in Production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../client/dist')));
+// Serve Frontend
+const clientDistPath = path.join(__dirname, '../client/dist');
 
-  app.get('*', (req, res) =>
-    res.sendFile(path.resolve(__dirname, '../client/dist/index.html'))
+if (fs.existsSync(clientDistPath)) {
+  app.use(express.static(clientDistPath));
+
+  app.use((req, res) =>
+    res.sendFile(path.resolve(clientDistPath, 'index.html'))
   );
 } else {
   app.get('/', (req, res) => {
-    res.send('API is running...');
+    res.send('API is running... (Client build not found at ' + clientDistPath + ')');
   });
 }
 
