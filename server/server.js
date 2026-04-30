@@ -27,9 +27,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Connect DB
-mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/teamtaskmanager')
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/teamtaskmanager', {
+  serverSelectionTimeoutMS: 5000 // Timeout after 5s instead of 30s
+})
   .then(() => console.log('MongoDB Connected'))
-  .catch((err) => console.log('MongoDB Connection Error: ', err));
+  .catch((err) => {
+    console.error('MongoDB Connection Error:', err.message);
+    // Do not exit process, allow the server to start to serve the frontend
+  });
 
 // API Routes
 app.use('/api/auth', authRoutes);
@@ -47,6 +52,8 @@ app.get('/*', (req, res) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, '0.0.0.0', () => {
+app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+}).on('error', (err) => {
+  console.error('Server failed to start:', err.message);
 });
